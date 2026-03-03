@@ -3,6 +3,7 @@ from flask_cors import CORS
 import mysql.connector
 import pickle
 import json
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # ==============================
@@ -68,10 +69,10 @@ season_translations = {
 # ==============================
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="krushi_sathi"
+        host=os.environ.get("DB_HOST"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASS"),
+        database=os.environ.get("DB_NAME")
     )
 
 # ==============================
@@ -431,4 +432,5 @@ def logout():
 # RUN APP
 # ==============================
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Railway sets PORT
+    app.run(host="0.0.0.0", port=port)
