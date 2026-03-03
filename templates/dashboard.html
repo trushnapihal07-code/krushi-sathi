@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <title>Krushi Sathi Dashboard</title>
+
+  <style>
+   body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('{{ url_for("static", filename="farmerb2.webp") }}') center/cover no-repeat;
+      filter: blur(8px) brightness(0.7);
+      z-index: -1;
+   }
+
+    .header {
+      background: linear-gradient(to right, #145A32, #27AE60);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-text {
+      text-align: center;
+      flex: 1;
+    }
+
+    .header-title {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .welcome-user {
+      font-size: 18px;
+      margin-top: 5px;
+    }
+
+    .logout-btn {
+      color: rgb(49, 83, 61);
+      text-decoration: none;
+      font-weight: bold;
+      background-color: #f8fbf9;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .lang-select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      margin-left: 15px;
+    }
+
+    .main-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      margin: 60px auto;
+      padding: 50px;
+      max-width: 900px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+    }
+
+    .card {
+      width: 300px;
+      height: 180px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #1E8449;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .card:hover {
+      transform: scale(1.08);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+      .card {
+        width: 90%;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div>
+      <a href="/logout" class="logout-btn" id="logoutText">बाहेर पडा</a>
+    </div>
+
+    <div class="header-text">
+      <div class="header-title" id="title">डॅशबोर्ड</div>
+      <div class="welcome-user" id="welcomeText">
+        स्वागत आहे, {{ user }} 👋
+      </div>
+    </div>
+
+    <select class="lang-select" id="langSelector" onchange="translateText()">
+      <option value="mr" selected>मराठी</option>
+      <option value="en">English</option>
+      <option value="hi">हिंदी</option>
+    </select>
+  </div>
+
+  <div class="main-content">
+    <div class="card" id="cropCard" onclick="openCropInfo()">🌱 पीक माहिती</div>
+    <div class="card" id="fertCard" onclick="openFertilizer()">🧪 खत मार्गदर्शक</div>
+  </div>
+
+<script>
+const translations = {
+  mr: {
+    title: "डॅशबोर्ड",
+    welcome: "स्वागत आहे",
+    crop: "🌱 पीक माहिती",
+    fert: "🧪 खत मार्गदर्शक",
+    logout: "बाहेर पडा"
+  },
+  en: {
+    title: "Dashboard",
+    welcome: "Welcome",
+    crop: "🌱 Crop Info",
+    fert: "🧪 Fertilizer Guide",
+    logout: "Logout"
+  },
+  hi: {
+    title: "डैशबोर्ड",
+    welcome: "स्वागत है",
+    crop: "🌱 फसल जानकारी",
+    fert: "🧪 उर्वरक मार्गदर्शिका",
+    logout: "लॉग आउट"
+  }
+};
+
+function translateText() {
+  const lang = document.getElementById("langSelector").value;
+  document.getElementById("title").innerText = translations[lang].title;
+  document.getElementById("welcomeText").innerHTML =
+      translations[lang].welcome + ", {{ user }} 👋";
+  document.getElementById("cropCard").innerText = translations[lang].crop;
+  document.getElementById("fertCard").innerText = translations[lang].fert;
+  document.getElementById("logoutText").innerText = translations[lang].logout;
+}
+
+function openCropInfo() {
+  window.location.href = "/crop_info";
+}
+
+function openFertilizer() {
+  window.location.href = "/fertilizer";
+}
+
+window.onload = function() {
+  translateText();
+};
+</script>
+
+</body>
+</html>

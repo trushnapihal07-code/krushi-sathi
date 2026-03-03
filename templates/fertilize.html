@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fertilizer Recommendation</title>
+
+<style>
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('{{ url_for("static", filename="farmerb2.webp") }}') center/cover no-repeat;
+  filter: blur(8px) brightness(0.7);
+  z-index: -1;
+}
+
+.container {
+    max-width: 520px;
+    margin: 50px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+select, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+}
+
+button {
+    background: #2e7d32;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.result {
+    margin-top: 20px;
+    background: #eef6ee;
+    padding: 15px;
+    border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<select id="langSelect" onchange="changeLanguage()">
+  <option value="en">English</option>
+  <option value="hi">हिंदी</option>
+  <option value="mr" selected>मराठी</option>
+</select>
+
+<h2 id="title">🌱 Fertilizer Recommendation</h2>
+
+<select id="cropSelect"></select>
+<select id="soilSelect"></select>
+
+<button onclick="getRecommendation()" id="btn">
+Get Recommendation
+</button>
+
+<div id="result" class="result" style="display:none;"></div>
+
+</div>
+
+<script>
+const API = "http://127.0.0.1:5000";
+let lang = "mr";
+
+const text = {
+  en:{
+    title:"🌱 Fertilizer Recommendation",
+    btn:"Get Recommendation",
+    crop:"Crop",
+    soil:"Soil",
+    npk:"NPK",
+    chemical:"Chemical",
+    organic:"Organic",
+    bio:"Bio",
+    stage:"Stage",
+    heading:"Recommendation"
+  },
+  hi:{
+    title:"🌱 उर्वरक सिफारिश",
+    btn:"सिफारिश प्राप्त करें",
+    crop:"फसल",
+    soil:"मिट्टी",
+    npk:"एनपीके",
+    chemical:"रासायनिक",
+    organic:"जैविक",
+    bio:"जैव",
+    stage:"चरण",
+    heading:"सिफारिश"
+  },
+  mr:{
+    title:"🌱 खत शिफारस",
+    btn:"शिफारस मिळवा",
+    crop:"पीक",
+    soil:"माती",
+    npk:"एनपीके",
+    chemical:"रासायनिक",
+    organic:"सेंद्रिय",
+    bio:"जैव",
+    stage:"टप्पा",
+    heading:"शिफारस"
+  }
+};
+
+function loadCrops(){
+ fetch(`${API}/crops?lang=${lang}`)
+ .then(r=>r.json())
+ .then(d=>{
+   cropSelect.innerHTML=`<option value="">--</option>`;
+   d.forEach(x=>{
+     cropSelect.innerHTML += 
+       `<option value="${x.value}">${x.label}</option>`;
+   });
+ });
+}
+
+function loadSoils(){
+ fetch(`${API}/soils?lang=${lang}`)
+ .then(r=>r.json())
+ .then(d=>{
+   soilSelect.innerHTML=`<option value="">--</option>`;
+   d.forEach(x=>{
+     soilSelect.innerHTML += 
+       `<option value="${x.value}">${x.label}</option>`;
+   });
+ });
+}
+
+function changeLanguage(){
+ lang = langSelect.value;
+
+ title.innerText = text[lang].title;
+ btn.innerText = text[lang].btn;
+
+ loadCrops();
+ loadSoils();
+}
+
+function getRecommendation(){
+ fetch(`${API}/recommend?crop=${cropSelect.value}&soil=${soilSelect.value}&lang=${lang}`)
+ .then(r=>r.json())
+ .then(d=>{
+   if(d.error){
+     alert(d.error);
+     return;
+   }
+
+   result.style.display="block";
+   result.innerHTML = `
+   <h3>✅ ${text[lang].heading}</h3>
+   <b>${text[lang].crop}:</b> ${d.crop}<br>
+   <b>${text[lang].soil}:</b> ${d.soil}<br>
+   <b>${text[lang].npk}:</b> ${d.npk}<br>
+   <b>${text[lang].chemical}:</b> ${d.chemical}<br>
+   <b>${text[lang].organic}:</b> ${d.organic}<br>
+   <b>${text[lang].bio}:</b> ${d.bio}<br>
+   <b>${text[lang].stage}:</b> ${d.stage}
+   `;
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  langSelect.value = "mr";
+  changeLanguage();
+});
+</script>
+
+</body>
+</html>

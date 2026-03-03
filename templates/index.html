@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Krushi Sathi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+    }
+
+    .splash-screen {
+      background: #008000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      animation: fadeOut 1s ease forwards;
+      animation-delay: 1.5s;
+    }
+
+    .logo-container {
+      background: white;
+      padding: 20px 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.3);
+      animation: zoomIn 1s ease-out forwards;
+    }
+
+    .logo-container img {
+      width: 120px;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    .main-content {
+      display: none;
+      min-height: 100vh;
+      padding: 30px;
+      color: white;
+      box-sizing: border-box;
+      opacity: 1;
+      transition: opacity 1s ease-in;
+
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url("/static/farmerb2.webp");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .main-content.visible {
+      opacity: 1;
+    }
+
+    .language-switch,
+    .auth-buttons {
+      position: absolute;
+      top: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 999;
+    }
+
+    .language-switch { right: 20px; }
+    .auth-buttons { left: 20px; }
+
+    .auth-buttons a,
+    .language-switch button {
+      padding: 8px 14px;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .auth-buttons a {
+      background-color: #ffffff;
+      color: #008000;
+    }
+
+    .auth-buttons a:hover,
+    .language-switch button:hover {
+      background-color: #00b894;
+      color: white;
+    }
+
+    .language-switch button {
+      background-color: #ffffff;
+      color: #008000;
+    }
+
+    .center-content {
+      text-align: center;
+      margin-top: 18vh;
+    }
+
+    .center-content h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .center-content p {
+      font-size: 20px;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+
+    .overview-section {
+      margin-top: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #ccc;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Splash -->
+  <div class="splash-screen" id="splash">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main">
+
+ <div class="auth-buttons">
+      <a href="/login">Login</a>
+<a href="/signup">Sign Up</a>
+    </div>
+    <div class="language-switch">
+      <button onclick="setLanguage('en')">English</button>
+      <button onclick="setLanguage('hi')">हिंदी</button>
+      <button onclick="setLanguage('mr')">मराठी</button>
+    </div>
+
+    <div class="center-content">
+      <h1 id="welcomeText">Welcome to <span style="color:#00FF7F;">Krushi Sathi</span></h1>
+      <p id="description">Your Own Smart Agriculture Companion</p>
+    </div>
+
+    <!-- Overview Section -->
+    <div class="overview-section">
+      <p id="overview">
+        Krushi Sathi is an initiative to support Indian farmers through technology.
+        Our platform offers personalized crop planning guidance, seasonal insights, and farming best practices — all in your local language.
+        <br><br>
+        After login or signup, you'll get access to tools designed for improving productivity and making farming decisions smarter and easier.
+        <br><br>
+        Join us in revolutionizing agriculture with data-driven decisions and community-focused support.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer" id="footer">
+      © 2025 Krushi Sathi | Designed with love for Indian Farmers 🌾
+    </div>
+
+  </div>
+
+<script>
+  const translations = {
+    en: {
+      welcomeText: "Welcome to <span style='color:#00FF7F;'>Krushi Sathi</span>",
+      description: "Your Own Smart Agriculture Companion",
+      overview: `Krushi Sathi is an initiative to support Indian farmers through technology.
+      Our platform offers personalized crop planning guidance, seasonal insights, and farming best practices — all in your local language.
+      <br><br>
+      After login or signup, you'll get access to tools designed for improving productivity and making farming decisions smarter and easier.
+      <br><br>
+      Join us in revolutionizing agriculture with data-driven decisions and community-focused support.`,
+      footer: "© 2025 Krushi Sathi | Designed with love for Indian Farmers 🌾"
+    },
+    hi: {
+      welcomeText: "आपका स्वागत है <span style='color:#00FF7F;'>कृषि साथी</span>",
+      description: "आपका अपना स्मार्ट कृषि साथी",
+      overview: `कृषि साथी भारतीय किसानों को तकनीक के माध्यम से समर्थन देने की एक पहल है।
+      हमारा प्लेटफॉर्म व्यक्तिगत फसल योजना मार्गदर्शन, मौसमी जानकारी और कृषि सर्वोत्तम प्रथाएं प्रदान करता है — आपकी स्थानीय भाषा में।
+      <br><br>
+      लॉगिन या साइनअप के बाद, आपको उत्पादकता बढ़ाने और खेती के निर्णयों को स्मार्ट बनाने वाले टूल्स तक पहुंच मिलेगी।
+      <br><br>
+      डेटा-आधारित निर्णयों और सामुदायिक समर्थन के साथ कृषि में क्रांति लाने में हमारा साथ दें।`,
+      footer: "© 2025 कृषि साथी | भारतीय किसानों के लिए प्रेम से बनाया गया 🌾"
+    },
+    mr: {
+      welcomeText: "स्वागत आहे <span style='color:#00FF7F;'>कृषी साथी</span>",
+      description: "तुमचा स्वतःचा स्मार्ट शेती सहकारी",
+      overview: `कृषी साथी ही भारतीय शेतकऱ्यांना तंत्रज्ञानाद्वारे मदत करणारी एक पुढाकार आहे.
+      आमचा प्लॅटफॉर्म वैयक्तिक पीक नियोजन, हंगामानुसार सल्ला आणि शेतीतील सर्वोत्तम पद्धती स्थानिक भाषेत पुरवतो.
+      <br><br>
+      लॉगिन किंवा साइनअप केल्यानंतर, तुम्हाला उत्पादनक्षमता वाढवण्यासाठी आणि निर्णय अधिक स्मार्ट बनवण्यासाठी साधनांचा लाभ मिळेल.
+      <br><br>
+      डेटा-आधारित निर्णय आणि समुदायाभिमुख समर्थनासह शेतीत क्रांती घडवण्यासाठी आमच्यात सामील व्हा.`,
+      footer: "© 2025 कृषी साथी | भारतीय शेतकऱ्यांसाठी प्रेमाने डिझाइन केलेले 🌾"
+    }
+  };
+
+  function setLanguage(lang) {
+    if (!translations[lang]) return;
+
+    document.getElementById("welcomeText").innerHTML = translations[lang].welcomeText;
+    document.getElementById("description").innerText = translations[lang].description;
+    document.getElementById("overview").innerHTML = translations[lang].overview;
+    document.getElementById("footer").innerText = translations[lang].footer;
+  }
+
+  window.onload = function() {
+    setTimeout(function() {
+      document.getElementById("splash").style.display = "none";
+      const main = document.getElementById("main");
+      main.style.display = "block";
+      setTimeout(() => main.classList.add("visible"), 100);
+      setLanguage("mr");
+    }, 1500);
+  };
+</script>
+
+</body>
+</html>
+
