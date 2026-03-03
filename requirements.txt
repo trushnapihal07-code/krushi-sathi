@@ -3,3 +3,6 @@ flask-cors
 mysql-connector-python
 Werkzeug
 pickle-mixin
+scikit-learn
+numpy
+pandas
