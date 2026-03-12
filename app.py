@@ -70,11 +70,11 @@ season_translations = {
 
 def get_db():
     return mysql.connector.connect(
-        host="caboose.proxy.rlwy.net",
-        port=34019,
-        user="root",
-        password="tShCEWsttZZsYFJshJeoyvnofAqPZpmn",
-        database="railway"
+        host=os.environ.get("MYSQLHOST"),
+        port=int(os.environ.get("MYSQLPORT")),
+        user=os.environ.get("MYSQLUSER"),
+        password=os.environ.get("MYSQLPASSWORD"),
+        database=os.environ.get("MYSQLDATABASE")
     )
 # ==============================
 # LOAD ML MODELS
