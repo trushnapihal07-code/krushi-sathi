@@ -3,8 +3,7 @@ from flask_cors import CORS
 import pickle
 import json
 import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # ==============================
@@ -22,59 +21,16 @@ CORS(app)
 with open("translations.json", "r", encoding="utf-8") as f:
     translations = json.load(f)
 
-crop_translations = {
-    "mr": {
-        "Pulses": "डाळी",
-        "Wheat": "गहू",
-        "Rice": "तांदूळ",
-        "Cotton": "कापूस"
-    },
-    "hi": {
-        "Pulses": "दालें",
-        "Wheat": "गेहूं",
-        "Rice": "चावल",
-        "Cotton": "कपास"
-    }
-}
-
-soil_translations = {
-    "mr": {
-        "Red Soil": "लाल माती",
-        "Black Soil": "काळी माती",
-        "Alluvial Soil": "गाळ माती",
-        "Laterite Soil": "लेटेराइट माती"
-    },
-    "hi": {
-        "Red Soil": "लाल मिट्टी",
-        "Black Soil": "काली मिट्टी",
-        "Alluvial Soil": "जलोढ़ मिट्टी",
-        "Laterite Soil": "लेटेराइट मिट्टी"
-    }
-}
-
-season_translations = {
-    "mr": {
-        "Kharif": "खरीप",
-        "Rabi": "रब्बी",
-        "Summer": "उन्हाळा"
-    },
-    "hi": {
-        "Kharif": "खरीफ",
-        "Rabi": "रबी",
-        "Summer": "गर्मी"
-    }
-}
-
 # ==============================
-# DATABASE CONNECTION
+# DATABASE CONNECTION (MYSQL ✅)
 # ==============================
 def get_db():
-    return psycopg2.connect(
+    return mysql.connector.connect(
         host=os.environ.get("DB_HOST"),
-        database=os.environ.get("DB_NAME"),
         user=os.environ.get("DB_USER"),
         password=os.environ.get("DB_PASSWORD"),
-        port=os.environ.get("DB_PORT")
+        database=os.environ.get("DB_NAME"),
+        port=int(os.environ.get("DB_PORT"))
     )
 
 # ==============================
@@ -85,23 +41,6 @@ le_district = pickle.load(open("le_district.pkl", "rb"))
 le_taluka = pickle.load(open("le_taluka.pkl", "rb"))
 le_season = pickle.load(open("le_season.pkl", "rb"))
 le_crop = pickle.load(open("le_crop.pkl", "rb"))
-
-# ==============================
-# SOIL ASSIGNMENT
-# ==============================
-def assign_soil(district):
-    black_soil = ["Pune", "Nagpur", "Nashik", "Wardha"]
-    laterite = ["Ratnagiri"]
-    alluvial = ["Mumbai"]
-
-    if district in black_soil:
-        return "Black Soil"
-    elif district in laterite:
-        return "Laterite Soil"
-    elif district in alluvial:
-        return "Alluvial Soil"
-    else:
-        return "Red Soil"
 
 # ==============================
 # HOME
@@ -123,7 +62,7 @@ def signup():
         password = generate_password_hash(request.form["password"])
 
         conn = get_db()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(dictionary=True)
 
         cursor.execute("SELECT id FROM users WHERE email=%s", (email,))
         if cursor.fetchone():
@@ -154,7 +93,7 @@ def login():
         password = request.form["password"]
 
         conn = get_db()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
             "SELECT * FROM users WHERE email=%s OR phone=%s",
@@ -187,20 +126,16 @@ def dashboard():
     return render_template("dashboard.html", user=session["user"])
 
 # ==============================
-# OTHER ROUTES (FIXED CURSOR)
+# CROPS
 # ==============================
 @app.route("/crops")
 def get_crops():
-    lang = request.args.get("lang", "mr")
-    column_map = {"en": "crop_name_en", "hi": "crop_name_hi", "mr": "crop_name_mr"}
-    column = column_map.get(lang, "crop_name_en")
-
     conn = get_db()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor = conn.cursor(dictionary=True)
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT crop_name_en AS value,
-               {column} AS label
+               crop_name_en AS label
         FROM crop_translations
         ORDER BY crop_name_en
     """)
@@ -209,18 +144,17 @@ def get_crops():
     conn.close()
     return jsonify(data)
 
+# ==============================
+# SOILS
+# ==============================
 @app.route("/soils")
 def get_soils():
-    lang = request.args.get("lang", "mr")
-    column_map = {"en": "soil_type_en", "hi": "soil_type_hi", "mr": "soil_type_mr"}
-    column = column_map.get(lang, "soil_type_en")
-
     conn = get_db()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor = conn.cursor(dictionary=True)
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT soil_type_en AS value,
-               {column} AS label
+               soil_type_en AS label
         FROM soil_translations
         ORDER BY soil_type_en
     """)
