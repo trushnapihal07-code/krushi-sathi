@@ -159,6 +159,21 @@ def dashboard():
 # ==============================
 # CROPS
 # ==============================
+@app.route("/crop_info")
+def crop_info():
+    if "user" not in session:
+        return redirect("/login")
+    return render_template("crop_info.html", user=session["user"])
+
+# ==============================
+# FERTILIZE PAGE ✅
+# ==============================
+@app.route("/fertilize")
+def fertilize():
+    if "user" not in session:
+        return redirect("/login")
+    return render_template("fertilize.html")
+
 @app.route("/crops")
 def get_crops():
     try:
