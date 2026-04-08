@@ -31,11 +31,12 @@ def get_db():
             user=os.environ.get("DB_USER"),
             password=os.environ.get("DB_PASSWORD"),
             database=os.environ.get("DB_NAME"),
-            port=int(os.environ.get("DB_PORT"))
+            port=int(os.environ.get("DB_PORT")),
+            ssl_disabled=False   # ✅ REQUIRED FOR RAILWAY
         )
         return conn
     except Exception as e:
-        print("DB CONNECTION ERROR:", e)
+        print("REAL DB ERROR:", e)
         return None
 
 # ==============================
