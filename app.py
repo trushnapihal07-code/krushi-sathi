@@ -159,7 +159,7 @@ def dashboard():
 # ==============================
 # CROPS
 # ==============================
-@app.route("/crops")
+@app.route("/crop_info")
 def get_crops():
     try:
         conn = get_db()
